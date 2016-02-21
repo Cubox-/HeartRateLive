@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Heart Rate Live</string>
+    <string name="start">Start</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <string name="pref_enabled">Enabled</string>
+    <string name="pref_enabled_sum">Start the background heart rate query service</string>
+    <string name="pref_keyword">Keyword</string>
+    <string name="pref_keyword_sum">Trigger word to be used by the service</string>
+    <string name="pref_contacts">Allowed contacts</string>
+    <string name="pref_contacts_sum">Remove allowed contacts by unchecking them. Long press to reset list</string>
+    <string name="addcontact">Add a contact to the allowed list</string>
+    <string name="addcontact_sum">Pick a contact that will be allowed to query your heart rate through text</string>
+    <string name="resetcontacts">Reset contacts list</string>
+</resources>

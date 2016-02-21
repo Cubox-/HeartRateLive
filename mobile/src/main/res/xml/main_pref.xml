@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <SwitchPreference
+        android:key="enabled"
+        android:title="@string/pref_enabled"
+        android:summary="@string/pref_enabled_sum"
+        android:defaultValue="false" />
+
+    <EditTextPreference
+        android:key="keyword"
+        android:title="@string/pref_keyword"
+        android:summary="@string/pref_keyword_sum"
+        android:defaultValue="&lt;&lt;33" />
+
+    <Preference
+        android:key="addcontact"
+        android:title="@string/addcontact"
+        android:summary="@string/addcontact_sum" />
+
+    <MultiSelectListPreference
+        android:key="contacts"
+        android:title="@string/pref_contacts"
+        android:summary="@string/pref_contacts_sum" />
+
+    <Preference
+        android:key="resetcontacts"
+        android:title="@string/resetcontacts" />
+
+</PreferenceScreen>
