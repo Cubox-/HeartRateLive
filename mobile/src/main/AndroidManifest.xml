@@ -16,7 +16,6 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -27,6 +26,12 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="me.cubox.heartratelive.MainActivity" />
+        </activity>
+        <activity android:name=".IntentListener">
+            <intent-filter>
+                <action android:name="me.cubox.heartratelive.GET" />
+                <category android:name="android.intent.category.EMBED" />
+            </intent-filter>
         </activity>
         <receiver android:name=".SmsListener" android:permission="android.permission.BROADCAST_SMS">
             <intent-filter>
