@@ -28,15 +28,18 @@ import java.util.concurrent.TimeUnit;
 
 public class SmsListener extends BroadcastReceiver {
     private static class QueryReply implements MessageApi.MessageListener {
-        final String sender;
-        final ArrayList<Short> totalHr;
-        final ArrayList<Byte> totalAccuracy;
-        final GoogleApiClient googleApiClient;
-        Calendar end;
+        private final String sender;
+        private final ArrayList<Short> totalHr;
+        private final ArrayList<Byte> totalAccuracy;
+        private final GoogleApiClient googleApiClient;
+        private final Timer timer;
+        private Calendar end;
         private QueryReply(String _sender, Context context) {
             sender = _sender;
             totalHr = new ArrayList<>();
             totalAccuracy = new ArrayList<>();
+            timer = new Timer();
+
             googleApiClient = new GoogleApiClient.Builder(context).addApi(Wearable.API).build();
             ConnectionResult connectionResult = googleApiClient.blockingConnect(10, TimeUnit.SECONDS);
             if (!connectionResult.isSuccess()) {
@@ -58,7 +61,7 @@ public class SmsListener extends BroadcastReceiver {
             Wearable.MessageApi.sendMessage(googleApiClient, node, "/HR", "Start".getBytes());
             end = Calendar.getInstance();
             end.add(Calendar.MINUTE, 1);
-            new Timer().schedule(new TimerTask() {
+            timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
                     onMessageReceived(new MessageEvent() {
@@ -74,7 +77,7 @@ public class SmsListener extends BroadcastReceiver {
 
                         @Override
                         public byte[] getData() {
-                            return "Timeout".getBytes();
+                            return "E: Timeout".getBytes();
                         }
 
                         @Override
@@ -90,10 +93,17 @@ public class SmsListener extends BroadcastReceiver {
         public void onMessageReceived(MessageEvent messageEvent) {
             ByteBuffer buffer = ByteBuffer.wrap(messageEvent.getData());
             if (messageEvent.getData()[0] == 'E') {
+                timer.cancel();
                 Log.d("HR", new String(messageEvent.getData()));
+                if (new String(messageEvent.getData()).compareTo("E: Timeout") == 0) {
+                    sendText(sender, "Heart rate query failed. Watch not replying. Try again.");
+                } else {
+                    sendText(sender, "Error: " + new String(messageEvent.getData()));
+                }
                 Wearable.MessageApi.removeListener(googleApiClient, this);
                 return;
             } else if (Calendar.getInstance().after(end)) {
+                timer.cancel();
                 Log.d("HR", "Unable to find a stable heart rate");
                 Wearable.MessageApi.sendMessage(googleApiClient, messageEvent.getSourceNodeId(), "/HR", "Stop".getBytes());
                 Wearable.MessageApi.removeListener(googleApiClient, this);
@@ -137,6 +147,7 @@ public class SmsListener extends BroadcastReceiver {
                         total += elem;
                     }
                     if ((max - min) <= 15) { // Won!
+                        timer.cancel();
                         sendText(sender, "Live heart rate is: " + String.valueOf(total / elements) + " BPM.");
                         Wearable.MessageApi.sendMessage(googleApiClient, messageEvent.getSourceNodeId(), "/HR", "Stop".getBytes());
                         Wearable.MessageApi.removeListener(googleApiClient, this);
