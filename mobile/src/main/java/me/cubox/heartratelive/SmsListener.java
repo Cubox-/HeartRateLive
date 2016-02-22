@@ -22,6 +22,8 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 public class SmsListener extends BroadcastReceiver {
@@ -51,11 +53,37 @@ public class SmsListener extends BroadcastReceiver {
             }
 
 
-            String node = result.getNodes().get(0).getId();
+            final String node = result.getNodes().get(0).getId();
             Wearable.MessageApi.addListener(googleApiClient, this);
             Wearable.MessageApi.sendMessage(googleApiClient, node, "/HR", "Start".getBytes());
             end = Calendar.getInstance();
             end.add(Calendar.MINUTE, 1);
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    onMessageReceived(new MessageEvent() {
+                        @Override
+                        public int getRequestId() {
+                            return 0;
+                        }
+
+                        @Override
+                        public String getPath() {
+                            return "/HR";
+                        }
+
+                        @Override
+                        public byte[] getData() {
+                            return "Timeout".getBytes();
+                        }
+
+                        @Override
+                        public String getSourceNodeId() {
+                            return node;
+                        }
+                    });
+                }
+            }, TimeUnit.MILLISECONDS.convert(2, TimeUnit.MINUTES));
         }
 
         @Override
