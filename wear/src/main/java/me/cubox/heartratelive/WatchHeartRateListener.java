@@ -68,7 +68,6 @@ public class WatchHeartRateListener extends WearableListenerService {
                 return;
             }
             active++;
-            Log.d("HR", "Active: " + String.valueOf(active));
 
             timeout = new Timer();
             timeout.schedule(new TimerTask() {
@@ -83,7 +82,6 @@ public class WatchHeartRateListener extends WearableListenerService {
             }, TimeUnit.MILLISECONDS.convert(2, TimeUnit.MINUTES));
         } else {
             active--;
-            Log.d("HR", "Active: " + String.valueOf(active));
             if (active <= 0) {
                 active = 0;
                 Log.d("HR", "Stopped");
